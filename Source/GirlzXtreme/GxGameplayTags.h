@@ -13,7 +13,6 @@ namespace GxGameplayTags
 {
 	/* [TODO]
 	// Declare all of the custom native tags that Gx will use
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_IsDead);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_Cooldown);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_Cost);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_TagsBlocked);
@@ -46,7 +45,6 @@ namespace GxGameplayTags
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Crouching);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_AutoRunning);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death_Dying);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death_Dead);
 
@@ -58,4 +56,7 @@ namespace GxGameplayTags
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Custom);
 	*/
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_IsDead);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death);
 };

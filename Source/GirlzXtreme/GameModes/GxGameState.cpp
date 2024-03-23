@@ -34,6 +34,8 @@ UAbilitySystemComponent* AGxGameState::GetAbilitySystemComponent() const
 
 void AGxGameState::SeamlessTravelTransitionCheckpoint(bool bToTransitionMap)
 {
+	Super::SeamlessTravelTransitionCheckpoint(bToTransitionMap);
+
 	// Remove inactive and bots
 	for (int32 i = PlayerArray.Num() - 1; 0 <= i; --i)
 	{

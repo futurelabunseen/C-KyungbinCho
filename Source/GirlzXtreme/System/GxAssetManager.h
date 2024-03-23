@@ -40,6 +40,14 @@ private:
 	// Called periodically during loads, could be used to feed the status to a loading screen
 	void UpdateInitialGameContentLoadPercent(float GameContentPercent);
 
+	/**
+	 * 확실하지 않은 내용
+	 * 
+	 * UPROPERTY 로 지정해준 TMap, TArray 에 들어가는 타입은 그 타입도 UCLASS() 나 USTRUCT() 로 지정해줘야 했다.
+	 * 또, 기본 생성자도 있어야 했다.
+	 * 
+	 * UPROPERTY 로 지정하지 않으면 전방 선언을 통한 불완전 타입도 허용됐다.
+	 */
 	// The list of tasks to execute on startup. Used to track startup progress.
 	UPROPERTY()
 	TArray<FGxAssetManagerStartupJob> StartupJobs;

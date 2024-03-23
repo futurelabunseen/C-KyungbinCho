@@ -19,6 +19,7 @@ public class GirlzXtreme : ModuleRules
 			"CoreUObject",
 			"Engine",
 			"InputCore",
+			"PhysicsCore",
 			"EnhancedInput",
 			"GameplayTags",
 			"GameplayTasks",
