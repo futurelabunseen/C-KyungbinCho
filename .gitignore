@@ -1,0 +1,66 @@
+# Ignore all files by default, but scan all directories.
+*
+!*/
+
+# Do not ignore git files in the root of the repo.
+!/.git*
+
+# Do not ignore Markdown files.
+!*.md
+
+# Do not ignore `.uproject`.
+!*.uproject
+
+# Do not ignore `.uplugin`.
+!*.uplugin
+
+# Do not ignore Source, Config and Plugins dirs.
+!/Source/**
+!/Config/**
+!/Plugins/**/Source/**
+!/Plugins/**/Config/**
+
+# Allow any files from Content dir.
+!/Content/**/*
+!/Plugins/**/Content/**/*
+
+# Allow any files from RawContent dir.
+!/RawContent/**/*
+!/Plugins/**/RawContent/**/*
+
+# OS/platform generated files.
+
+# Windows
+ehthumbs.db
+Thumbs.db
+
+# Mac OS X
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+
+# vim
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+
+# Visual Studio
+.vs
+.vsconfig
+!/.editorconfig
+
+# Ignore asset files from Content dir.
+/Content/Assets/**
+/Plugins/**/Content/Assets/**
+
+# Ignore asset files from RawContent dir.
+/RawContent/Assets/**
+/Plugins/**/RawContent/Assets/**
