@@ -56,4 +56,7 @@ namespace GxGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_ActivateFail_IsDead, "Ability.ActivateFail.IsDead", "Ability failed to activate because its owner is dead.");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death, "Status.Death", "Target has the death status.");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Jumping, "Movement.Mode.Jumping", "Custom Character movement tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Crouching, "Movement.Mode.Crouching", "Custom Character movement tag");
 }

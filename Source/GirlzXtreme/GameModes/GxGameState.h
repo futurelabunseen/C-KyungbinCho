@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "AbilitySystemInterface.h"
 #include "ModularGameState.h"
+#include "AbilitySystemInterface.h"
 
 #include "GxGameState.generated.h"
 

@@ -13,9 +13,4 @@
 AGxGameMode::AGxGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Assets/ThirdPerson/Blueprints/BP_ThirdPersonCharacter_C"));
-	gxcheck(PlayerPawnBPClass.Class);
-
-	DefaultPawnClass = PlayerPawnBPClass.Class;
 }

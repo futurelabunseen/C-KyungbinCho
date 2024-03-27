@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Abilities/GameplayAbility.h"
+#include "AbilitySystem/Abilities/GxAbilityInputID.h"
 
 #include "GxGameplayAbility.generated.h"
 
@@ -107,4 +108,12 @@ protected:
 	// Additional costs that must be paid to activate this ability
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = Costs)
 	TArray<TObjectPtr<UGxAbilityCost>> AdditionalCosts;
+
+	// 입력 바인딩에 사용될 입력 ID
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gx|Inputs")
+	EGxAbilityInputID AbilityInputID;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Gx|Inputs")
+	const EGxAbilityInputID GetGxAbilityInputID() const { return AbilityInputID; }
 };
