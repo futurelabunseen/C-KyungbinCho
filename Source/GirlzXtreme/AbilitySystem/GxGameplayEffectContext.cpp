@@ -36,10 +36,7 @@ const IGxAbilitySourceInterface* FGxGameplayEffectContext::GetAbilitySource() co
 
 const UPhysicalMaterial* FGxGameplayEffectContext::GetPhysicalMaterial() const
 {
-	if (const FHitResult* HitResultPtr = GetHitResult())
-	{
-		return HitResultPtr->PhysMaterial.Get();
-	}
+	const FHitResult* HitResultPtr = GetHitResult();
 
-	return nullptr;
+	return (HitResultPtr ? HitResultPtr->PhysMaterial.Get() : nullptr);
 }

@@ -2,14 +2,16 @@
 
 #pragma once
 
-#include "AbilitySystemInterface.h"
 #include "ModularPlayerState.h"
+#include "AbilitySystemInterface.h"
 
 #include "GxPlayerState.generated.h"
 
 class AGxPlayerController;
 class UAbilitySystemComponent;
 class UGxAbilitySystemComponent;
+class UGxCharacterSet;
+struct FOnAttributeChangeData;
 
 /**
  * AGxPlayerState
@@ -29,6 +31,10 @@ public:
 	virtual void PostInitializeComponents() override;
 	//~End of APlayerState interface
 
+	//~AModularPlayerState interface
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	//~End of AModularPlayerState interface
+
 	//~IAbilitySystemInterface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~End of IAbilitySystemInterface
@@ -42,4 +48,13 @@ private:
 	// The ability system component sub-object used by player characters.
 	UPROPERTY(VisibleAnywhere, Category = "Gx|PlayerState")
 	TObjectPtr<UGxAbilitySystemComponent> AbilitySystemComponent;
+
+	// The character attribute set sub-object used by player characters.
+	UPROPERTY(VisibleAnywhere, Category = "Gx|PlayerState")
+	TObjectPtr<UGxCharacterSet> CharacterSet;
+
+	void HandleAttributeChanged(const FOnAttributeChangeData& AttributeChangedData);
+
+	FDelegateHandle OnWalkSpeedAttributeChangeHandle;
+	FDelegateHandle OnCrouchedSpeedAttributeChangeHandle;
 };

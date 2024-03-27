@@ -72,6 +72,10 @@ AController* UGxGameplayAbility::GetControllerFromActorInfo() const
 
 AGxCharacter* UGxGameplayAbility::GetGxCharacterFromActorInfo() const
 {
+	/**
+	 * 이런이런.. InstancingPolicy 를 NonInstanced 로 설정하면 어빌리티가 CDO 에서 실행되면서
+	 * CurrentActorInfo 에 NULL 이 들어있게 된다.
+	 */
 	return (CurrentActorInfo ? Cast<AGxCharacter>(CurrentActorInfo->AvatarActor.Get()) : nullptr);
 }
 
@@ -200,9 +204,8 @@ FGameplayEffectContextHandle UGxGameplayAbility::MakeEffectContext(const FGamepl
 	FGameplayEffectContextHandle ContextHandle = Super::MakeEffectContext(Handle, ActorInfo);
 
 	FGxGameplayEffectContext* EffectContext = FGxGameplayEffectContext::ExtractEffectContext(ContextHandle);
-	gxcheck(EffectContext);
-
-	gxcheck(ActorInfo);
+	gxcheck_log(EffectContext);
+	gxcheck_log(ActorInfo);
 
 	AActor* EffectCauser = nullptr;
 	const IGxAbilitySourceInterface* AbilitySource = nullptr;

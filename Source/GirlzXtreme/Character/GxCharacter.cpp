@@ -9,13 +9,26 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Player/GxPlayerController.h"
 #include "Player/GxPlayerState.h"
 #include "AbilitySystem/GxAbilitySystemComponent.h"
+#include "AbilitySystem/Abilities/GxGameplayAbility.h"
+#include "AbilitySystem/Abilities/GxAbilityInputID.h"
+#include "GameplayEffect.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GxCharacter)
+
+//////////////////////////////////////////////////////////////////////
+
+#define BIND_IA(InputAction, TriggerEvent, Callback, ...) \
+	EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::##TriggerEvent##, this, Callback, ##__VA_ARGS__)
+#define BIND_GAS_IA_PRESSED(InputAction, TriggerEvent, GxAbilityInputID, ...) \
+	EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::##TriggerEvent##, this, &ThisClass::GASInputPressed, EGxAbilityInputID::##GxAbilityInputID##, ##__VA_ARGS__)
+#define BIND_GAS_IA_RELEASED(InputAction, TriggerEvent, GxAbilityInputID, ...) \
+	EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::##TriggerEvent##, this, &ThisClass::GASInputReleased, EGxAbilityInputID::##GxAbilityInputID##, ##__VA_ARGS__)
+
+//////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
 // AGxCharacter
@@ -28,16 +41,16 @@ AGxCharacter::AGxCharacter(const FObjectInitializer& ObjectInitializer)
 		
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	GetCharacterMovement()->bOrientRotationToMovement = false; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
-	GetCharacterMovement()->JumpZVelocity = 700.f;
+	GetCharacterMovement()->JumpZVelocity = 400.f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
@@ -58,19 +71,39 @@ AGxCharacter::AGxCharacter(const FObjectInitializer& ObjectInitializer)
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AGxCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AGxPlayerState* GxPS = GetGxPlayerState();
+	UGxAbilitySystemComponent* GxASC = GetGxAbilitySystemComponent();
+	gxcheck(GxPS);
+	gxcheck(GxASC);
+
+	GxASC->InitAbilityActorInfo(GxPS, this);
+
+	GiveAbilities(DefaultAbilities);
+	GiveAbilities(DefaultInputAbilities);
+	ApplyEffects(DefaultEffects);
+}
+
+void AGxCharacter::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+
+	// Add Input Mapping Context
+	AGxPlayerController* GxPlayerController = Cast<AGxPlayerController>(Controller);
+	gxcheck(GxPlayerController);
+
+	GxPlayerController->AddMappingContext(MovementMappingContext, /*Priority*/1);
+	GxPlayerController->AddMappingContext(CombatMappingContext, /*Priority*/0);
+}
+
 void AGxCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
 
-	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 }
 
 AGxPlayerController* AGxCharacter::GetGxPlayerController() const
@@ -91,7 +124,7 @@ UGxAbilitySystemComponent* AGxCharacter::GetGxAbilitySystemComponent() const
 UAbilitySystemComponent* AGxCharacter::GetAbilitySystemComponent() const
 {
 	AGxPlayerState* GxPS = GetGxPlayerState();
-	gxcheck_ret(GxPS, nullptr);
+	gxcheck(GxPS, nullptr);
 
 	return GxPS->GetAbilitySystemComponent();
 }
@@ -104,52 +137,168 @@ void AGxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 
-		//Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGxCharacter::Move);
+	// Moving
+	BIND_IA(MoveAction, Triggered, &ThisClass::Move);
 
-		//Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGxCharacter::Look);
+	// Looking
+	BIND_IA(LookAction, Triggered, &ThisClass::Look);
+
+	SetupGASInputComponent();
+}
+
+void AGxCharacter::SetupGASInputComponent()
+{
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+
+	// Jumping
+	BIND_GAS_IA_PRESSED(JumpAction, Started, Jump);
+	BIND_GAS_IA_RELEASED(JumpAction, Completed, Jump);
+
+	// Crouching
+	BIND_GAS_IA_PRESSED(CrouchAction, Started, Crouch);
+	BIND_GAS_IA_RELEASED(CrouchAction, Completed, Crouch);
+
+	// Attack
+	BIND_GAS_IA_PRESSED(AttackAction, Started, Attack);
+	BIND_GAS_IA_RELEASED(AttackAction, Completed, Attack);
+
+	// Skill1
+	BIND_GAS_IA_PRESSED(Skill1Action, Started, Skill1);
+	BIND_GAS_IA_RELEASED(Skill1Action, Completed, Skill1);
+
+	// Skill2
+	BIND_GAS_IA_PRESSED(Skill2Action, Started, Skill2);
+	BIND_GAS_IA_RELEASED(Skill2Action, Completed, Skill2);
+
+	// Ultimate
+	BIND_GAS_IA_PRESSED(UltimateAction, Started, Ultimate);
+	BIND_GAS_IA_RELEASED(UltimateAction, Completed, Ultimate);
+}
+
+void AGxCharacter::GASInputPressed(EGxAbilityInputID InputId)
+{
+	UGxAbilitySystemComponent* GxASC = GetGxAbilitySystemComponent();
+	FGameplayAbilitySpec* GASpec = GxASC->FindAbilitySpecFromInputID(ToUtype(InputId));
+	gxcheck(GxASC);
+	gxcheck(GASpec);
+
+	GASpec->InputPressed = true;
+	if (GASpec->IsActive())
+	{
+		GxASC->AbilitySpecInputPressed(*GASpec);
+	}
+	else
+	{
+		GxASC->TryActivateAbility(GASpec->Handle);
+	}
+}
+
+void AGxCharacter::GASInputReleased(EGxAbilityInputID InputId)
+{
+	UGxAbilitySystemComponent* GxASC = GetGxAbilitySystemComponent();
+	FGameplayAbilitySpec* GASpec = GxASC->FindAbilitySpecFromInputID(ToUtype(InputId));
+	gxcheck(GxASC);
+	gxcheck(GASpec);
+
+	GASpec->InputPressed = false;
+	if (GASpec->IsActive())
+	{
+		GxASC->AbilitySpecInputReleased(*GASpec);
 	}
 }
 
 void AGxCharacter::Move(const FInputActionValue& Value)
 {
+	gxcheck(Controller);
+
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+	// find out which way is forward
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	// get forward vector
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	// get right vector 
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
+	// add movement 
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void AGxCharacter::Look(const FInputActionValue& Value)
 {
+	gxcheck(Controller);
+
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
+	// add yaw and pitch input to controller
+	AddControllerYawInput(LookAxisVector.X);
+	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+bool AGxCharacter::CanJumpInternal_Implementation() const
+{
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	gxcheck(MovementComponent, false);
+
+	bool bCanJump = Super::CanJumpInternal_Implementation();
+
+	return (bCanJump || (!MovementComponent->IsFalling() && bIsCrouched));
+}
+
+bool AGxCharacter::CanCrouch() const
+{
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	gxcheck(MovementComponent, false);
+
+	bool bCanCrouch = Super::CanCrouch();
+
+	return (bCanCrouch && !MovementComponent->IsFalling());
+}
+
+//////////////////////////////////////////////////////////////////////////
+// GAS
+
+void AGxCharacter::GiveAbilities(const TArray<TSubclassOf<UGxGameplayAbility>>& Abilities) const
+{
+	UGxAbilitySystemComponent* GxASC = GetGxAbilitySystemComponent();
+	gxcheck(GxASC);
+
+	for (const auto& Ability : Abilities)
 	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		FGameplayAbilitySpec StartSpec(Ability);
+		const UGxGameplayAbility* AbilityCDO = Ability.GetDefaultObject();
+		bool bIsInputAbility = (AbilityCDO->GetGxAbilityInputID() != EGxAbilityInputID::None);
+
+		if (bIsInputAbility)
+		{
+			EGxAbilityInputID InputID = Ability.GetDefaultObject()->GetGxAbilityInputID();
+			StartSpec.InputID = ToUtype(InputID);
+		}
+		GxASC->GiveAbility(StartSpec);
+	}
+}
+
+void AGxCharacter::ApplyEffects(const TArray<TSubclassOf<UGameplayEffect>>& Effects) const
+{
+	UGxAbilitySystemComponent* GxASC = GetGxAbilitySystemComponent();
+	gxcheck(GxASC);
+
+	FGameplayEffectContextHandle EffectContext = GxASC->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	for (const auto& Effect : Effects)
+	{
+		FGameplayEffectSpecHandle NewGEHandle = GxASC->MakeOutgoingSpec(Effect, /*Level*/1, EffectContext);
+		gxcheck(NewGEHandle.IsValid());
+
+		GxASC->ApplyGameplayEffectSpecToSelf(*NewGEHandle.Data.Get());
 	}
 }

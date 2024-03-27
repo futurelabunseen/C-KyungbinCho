@@ -9,6 +9,7 @@
 class APawn;
 class AGxPlayerState;
 class UGxAbilitySystemComponent;
+class UInputMappingContext;
 
 /**
  * AGxPlayerController
@@ -32,9 +33,10 @@ public:
 
 	//~ACommonPlayerController interface
 	virtual void OnPossess(APawn* InPawn) override;
-	//~End of ACommonPlayerController interface
-
-	//~ACommonPlayerController interface
 	virtual void OnUnPossess() override;
 	//~End of ACommonPlayerController interface
+
+	void ClearAllMappings();
+	void AddMappingContext(UInputMappingContext* NewMappingContext, int32 Priority = 0);
+	void RemoveMappingContext(UInputMappingContext* MappingContext);
 };

@@ -12,7 +12,7 @@ struct FGameplayTagContainer;
 /**
  * IGxAbilitySourceInterface
  *
- * 거리에 따른 데미지 감쇄 등을 계산하는 데 사용되는 인터페이스 클래스
+ * 거리에 따른 데미지 감쇠 등을 계산하는 데 사용되는 인터페이스 클래스
  */
 UINTERFACE(Meta = (ShortTooltip = "Base interface for anything acting as a ability calculation source."))
 class UGxAbilitySourceInterface : public UInterface

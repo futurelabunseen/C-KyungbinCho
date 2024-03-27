@@ -59,4 +59,7 @@ namespace GxGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_IsDead);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Jumping);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Crouching);
 };

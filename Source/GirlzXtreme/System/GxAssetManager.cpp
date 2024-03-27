@@ -24,7 +24,7 @@ UGxAssetManager::UGxAssetManager(const FObjectInitializer& ObjectInitializer)
 
 UGxAssetManager& UGxAssetManager::Get()
 {
-	gxcheck(GEngine);
+	gxcheck_log(GEngine);
 
 	if (UGxAssetManager* Singleton = Cast<UGxAssetManager>(GEngine->AssetManager))
 	{

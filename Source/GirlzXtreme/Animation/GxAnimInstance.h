@@ -20,6 +20,8 @@ public:
 	UGxAnimInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
+	//~UAnimInstance interface
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	//~End of UAnimInstance interface
 };
