@@ -30,6 +30,10 @@ public:
 	ATTRIBUTE_ACCESSORS(UGxCharacterSet, AttackSpeedRate);
 	ATTRIBUTE_ACCESSORS(UGxCharacterSet, MaxAttackSpeedRate);
 
+	//~UObject interface
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//~End of UObject interface
+
 protected:
 	//~UAttributeSet interface
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
@@ -46,26 +50,44 @@ protected:
 
 private:
 	// The current walk speed attribute.  The walk speed will be capped by the max walk speed attribute.
-	UPROPERTY(BlueprintReadOnly, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_WalkSpeed, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData WalkSpeed;
 
 	// The current max walk speed attribute.
-	UPROPERTY(BlueprintReadOnly, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxWalkSpeed, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxWalkSpeed;
 
 	// The current crouched speed attribute.  The crouched speed will be capped by the max crouched speed attribute.
-	UPROPERTY(BlueprintReadOnly, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CrouchedSpeed, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData CrouchedSpeed;
 
 	// The current max crouched speed attribute.
-	UPROPERTY(BlueprintReadOnly, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxCrouchedSpeed, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxCrouchedSpeed;
 
 	// The current attack speed rate attribute.  The attack speed rate will be capped by the max attack speed rate attribute.
-	UPROPERTY(BlueprintReadOnly, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_AttackSpeedRate, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData AttackSpeedRate;
 
 	// The current max attack speed rate attribute.
-	UPROPERTY(BlueprintReadOnly, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxAttackSpeedRate, Category = "Gx|Character", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxAttackSpeedRate;
+
+	UFUNCTION()
+	void OnRep_WalkSpeed(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_MaxWalkSpeed(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_CrouchedSpeed(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_MaxCrouchedSpeed(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_AttackSpeedRate(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_MaxAttackSpeedRate(const FGameplayAttributeData& OldValue);
 };

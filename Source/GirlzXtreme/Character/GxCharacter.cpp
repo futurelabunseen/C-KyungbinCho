@@ -6,29 +6,15 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInputComponent.h"
-#include "InputActionValue.h"
 #include "Player/GxPlayerController.h"
 #include "Player/GxPlayerState.h"
+#include "Character/GxHeroComponent.h"
 #include "AbilitySystem/GxAbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/GxGameplayAbility.h"
-#include "AbilitySystem/Abilities/GxAbilityInputID.h"
-#include "GameplayEffect.h"
+// [TODO] 임시 코드
+#include "Weapons/GxWeapon.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GxCharacter)
-
-//////////////////////////////////////////////////////////////////////
-
-#define BIND_IA(InputAction, TriggerEvent, Callback, ...) \
-	EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::##TriggerEvent##, this, Callback, ##__VA_ARGS__)
-#define BIND_GAS_IA_PRESSED(InputAction, TriggerEvent, GxAbilityInputID, ...) \
-	EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::##TriggerEvent##, this, &ThisClass::GASInputPressed, EGxAbilityInputID::##GxAbilityInputID##, ##__VA_ARGS__)
-#define BIND_GAS_IA_RELEASED(InputAction, TriggerEvent, GxAbilityInputID, ...) \
-	EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::##TriggerEvent##, this, &ThisClass::GASInputReleased, EGxAbilityInputID::##GxAbilityInputID##, ##__VA_ARGS__)
-
-//////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
 // AGxCharacter
@@ -67,6 +53,9 @@ AGxCharacter::AGxCharacter(const FObjectInitializer& ObjectInitializer)
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	// Create a Gx Hero component
+	HeroComponent = ObjectInitializer.CreateDefaultSubobject<UGxHeroComponent>(this, TEXT("HeroComponent"));
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -81,22 +70,9 @@ void AGxCharacter::PossessedBy(AController* NewController)
 	gxcheck(GxASC);
 
 	GxASC->InitAbilityActorInfo(GxPS, this);
-
-	GiveAbilities(DefaultAbilities);
-	GiveAbilities(DefaultInputAbilities);
-	ApplyEffects(DefaultEffects);
-}
-
-void AGxCharacter::PawnClientRestart()
-{
-	Super::PawnClientRestart();
-
-	// Add Input Mapping Context
-	AGxPlayerController* GxPlayerController = Cast<AGxPlayerController>(Controller);
-	gxcheck(GxPlayerController);
-
-	GxPlayerController->AddMappingContext(MovementMappingContext, /*Priority*/1);
-	GxPlayerController->AddMappingContext(CombatMappingContext, /*Priority*/0);
+	GxASC->GiveAbilities(DefaultInputAbilities);
+	GxASC->GiveAbilities(DefaultAbilities);
+	GxASC->ApplyEffects(DefaultEffects);
 }
 
 void AGxCharacter::BeginPlay()
@@ -104,6 +80,13 @@ void AGxCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	// [TODO] 임시 코드
+	UE_DEBUG_BREAK();
+	gxcheck(DefaultWeapon);
+	CurrentWeapon = GetWorld()->SpawnActor<AGxWeapon>(DefaultWeapon);
+	CurrentWeapon->Equip(this);
+	CurrentWeapon->Unequip();
+	CurrentWeapon->Equip(this);
 }
 
 AGxPlayerController* AGxCharacter::GetGxPlayerController() const
@@ -116,17 +99,17 @@ AGxPlayerState* AGxCharacter::GetGxPlayerState() const
 	return CastChecked<AGxPlayerState>(GetPlayerState(), ECastCheckedType::NullAllowed);
 }
 
-UGxAbilitySystemComponent* AGxCharacter::GetGxAbilitySystemComponent() const
-{
-	return Cast<UGxAbilitySystemComponent>(GetAbilitySystemComponent());
-}
-
 UAbilitySystemComponent* AGxCharacter::GetAbilitySystemComponent() const
 {
 	AGxPlayerState* GxPS = GetGxPlayerState();
 	gxcheck(GxPS, nullptr);
 
 	return GxPS->GetAbilitySystemComponent();
+}
+
+UGxAbilitySystemComponent* AGxCharacter::GetGxAbilitySystemComponent() const
+{
+	return Cast<UGxAbilitySystemComponent>(GetAbilitySystemComponent());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -136,169 +119,31 @@ void AGxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Set up action bindings
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-
-	// Moving
-	BIND_IA(MoveAction, Triggered, &ThisClass::Move);
-
-	// Looking
-	BIND_IA(LookAction, Triggered, &ThisClass::Look);
-
-	SetupGASInputComponent();
-}
-
-void AGxCharacter::SetupGASInputComponent()
-{
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-
-	// Jumping
-	BIND_GAS_IA_PRESSED(JumpAction, Started, Jump);
-	BIND_GAS_IA_RELEASED(JumpAction, Completed, Jump);
-
-	// Crouching
-	BIND_GAS_IA_PRESSED(CrouchAction, Started, Crouch);
-	BIND_GAS_IA_RELEASED(CrouchAction, Completed, Crouch);
-
-	// Attack
-	BIND_GAS_IA_PRESSED(AttackAction, Started, Attack);
-	BIND_GAS_IA_RELEASED(AttackAction, Completed, Attack);
-
-	// Skill1
-	BIND_GAS_IA_PRESSED(Skill1Action, Started, Skill1);
-	BIND_GAS_IA_RELEASED(Skill1Action, Completed, Skill1);
-
-	// Skill2
-	BIND_GAS_IA_PRESSED(Skill2Action, Started, Skill2);
-	BIND_GAS_IA_RELEASED(Skill2Action, Completed, Skill2);
-
-	// Ultimate
-	BIND_GAS_IA_PRESSED(UltimateAction, Started, Ultimate);
-	BIND_GAS_IA_RELEASED(UltimateAction, Completed, Ultimate);
-}
-
-void AGxCharacter::GASInputPressed(EGxAbilityInputID InputId)
-{
-	UGxAbilitySystemComponent* GxASC = GetGxAbilitySystemComponent();
-	FGameplayAbilitySpec* GASpec = GxASC->FindAbilitySpecFromInputID(ToUtype(InputId));
-	gxcheck(GxASC);
-	gxcheck(GASpec);
-
-	GASpec->InputPressed = true;
-	if (GASpec->IsActive())
-	{
-		GxASC->AbilitySpecInputPressed(*GASpec);
-	}
-	else
-	{
-		GxASC->TryActivateAbility(GASpec->Handle);
-	}
-}
-
-void AGxCharacter::GASInputReleased(EGxAbilityInputID InputId)
-{
-	UGxAbilitySystemComponent* GxASC = GetGxAbilitySystemComponent();
-	FGameplayAbilitySpec* GASpec = GxASC->FindAbilitySpecFromInputID(ToUtype(InputId));
-	gxcheck(GxASC);
-	gxcheck(GASpec);
-
-	GASpec->InputPressed = false;
-	if (GASpec->IsActive())
-	{
-		GxASC->AbilitySpecInputReleased(*GASpec);
-	}
-}
-
-void AGxCharacter::Move(const FInputActionValue& Value)
-{
-	gxcheck(Controller);
-
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	// find out which way is forward
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	// get forward vector
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
-	// get right vector 
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	// add movement 
-	AddMovementInput(ForwardDirection, MovementVector.Y);
-	AddMovementInput(RightDirection, MovementVector.X);
-}
-
-void AGxCharacter::Look(const FInputActionValue& Value)
-{
-	gxcheck(Controller);
-
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	// add yaw and pitch input to controller
-	AddControllerYawInput(LookAxisVector.X);
-	AddControllerPitchInput(LookAxisVector.Y);
+	HeroComponent->InitializePlayerInput(PlayerInputComponent);
 }
 
 bool AGxCharacter::CanJumpInternal_Implementation() const
 {
+	if (Super::CanJumpInternal_Implementation())
+	{
+		return true;
+	}
+
 	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	gxcheck(MovementComponent, false);
 
-	bool bCanJump = Super::CanJumpInternal_Implementation();
-
-	return (bCanJump || (!MovementComponent->IsFalling() && bIsCrouched));
+	return !MovementComponent->IsFalling();
 }
 
 bool AGxCharacter::CanCrouch() const
 {
+	if (!Super::CanCrouch())
+	{
+		return false;
+	}
+
 	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	gxcheck(MovementComponent, false);
 
-	bool bCanCrouch = Super::CanCrouch();
-
-	return (bCanCrouch && !MovementComponent->IsFalling());
-}
-
-//////////////////////////////////////////////////////////////////////////
-// GAS
-
-void AGxCharacter::GiveAbilities(const TArray<TSubclassOf<UGxGameplayAbility>>& Abilities) const
-{
-	UGxAbilitySystemComponent* GxASC = GetGxAbilitySystemComponent();
-	gxcheck(GxASC);
-
-	for (const auto& Ability : Abilities)
-	{
-		FGameplayAbilitySpec StartSpec(Ability);
-		const UGxGameplayAbility* AbilityCDO = Ability.GetDefaultObject();
-		bool bIsInputAbility = (AbilityCDO->GetGxAbilityInputID() != EGxAbilityInputID::None);
-
-		if (bIsInputAbility)
-		{
-			EGxAbilityInputID InputID = Ability.GetDefaultObject()->GetGxAbilityInputID();
-			StartSpec.InputID = ToUtype(InputID);
-		}
-		GxASC->GiveAbility(StartSpec);
-	}
-}
-
-void AGxCharacter::ApplyEffects(const TArray<TSubclassOf<UGameplayEffect>>& Effects) const
-{
-	UGxAbilitySystemComponent* GxASC = GetGxAbilitySystemComponent();
-	gxcheck(GxASC);
-
-	FGameplayEffectContextHandle EffectContext = GxASC->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	for (const auto& Effect : Effects)
-	{
-		FGameplayEffectSpecHandle NewGEHandle = GxASC->MakeOutgoingSpec(Effect, /*Level*/1, EffectContext);
-		gxcheck(NewGEHandle.IsValid());
-
-		GxASC->ApplyGameplayEffectSpecToSelf(*NewGEHandle.Data.Get());
-	}
+	return !MovementComponent->IsFalling();
 }

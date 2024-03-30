@@ -24,6 +24,7 @@ public class GirlzXtreme : ModuleRules
 			"GameplayTags",
 			"GameplayTasks",
 			"GameplayAbilities",
+			"ModularGameplay",
 			"ModularGameplayActors"
 		});
 

@@ -24,10 +24,7 @@ bool UGxGameplayAbility_Jump::CanActivateAbility(const FGameplayAbilitySpecHandl
 		return false;
 	}
 
-	gxcheck(ActorInfo, false);
-	gxcheck(ActorInfo->AvatarActor.IsValid(), false);
-
-	const AGxCharacter* GxCharacter = Cast<AGxCharacter>(ActorInfo->AvatarActor.Get());
+	const AGxCharacter* GxCharacter = GetGxCharacterFromActorInfo();
 	gxcheck(GxCharacter, false);
 
 	return GxCharacter->CanJump();
@@ -37,9 +34,6 @@ void UGxGameplayAbility_Jump::ActivateAbility(const FGameplayAbilitySpecHandle H
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	AGxCharacter* GxCharacter = GetGxCharacterFromActorInfo();
-	gxcheck(GxCharacter);
-
 	CharacterJumpStart();
 }
 
@@ -47,9 +41,7 @@ void UGxGameplayAbility_Jump::InputReleased(const FGameplayAbilitySpecHandle Han
 {
 	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
 
-	bool bReplicateEndAbility = true;
-	bool bWasCancelled = false;
-	EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	EndAbility(Handle, ActorInfo, ActivationInfo, /*bReplicateEndAbility*/true, /*bWasCancelled*/false);
 }
 
 void UGxGameplayAbility_Jump::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -87,5 +79,5 @@ void UGxGameplayAbility_Jump::CharacterJumpStop()
 
 void UGxGameplayAbility_Jump::OnLandedCallback(const FHitResult& Hit)
 {
-	K2_EndAbility();
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, /*bReplicateEndAbility*/true, /*bWasCancelled*/false);
 }

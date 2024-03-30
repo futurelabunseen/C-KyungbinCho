@@ -4,6 +4,7 @@
 
 #include "GxLogChannels.h"
 #include "GameplayEffectExtension.h"
+#include "Net/UnrealNetwork.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GxCharacterSet)
 
@@ -19,6 +20,48 @@ UGxCharacterSet::UGxCharacterSet(const FObjectInitializer& ObjectInitializer)
 	, AttackSpeedRate(1.0f)
 	, MaxAttackSpeedRate(2.0f)
 {
+}
+
+void UGxCharacterSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UGxCharacterSet, WalkSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGxCharacterSet, MaxWalkSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGxCharacterSet, CrouchedSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGxCharacterSet, MaxCrouchedSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGxCharacterSet, AttackSpeedRate, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGxCharacterSet, MaxAttackSpeedRate, COND_None, REPNOTIFY_Always);
+}
+
+void UGxCharacterSet::OnRep_WalkSpeed(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGxCharacterSet, WalkSpeed, OldValue);
+}
+
+void UGxCharacterSet::OnRep_MaxWalkSpeed(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGxCharacterSet, MaxWalkSpeed, OldValue);
+}
+
+void UGxCharacterSet::OnRep_CrouchedSpeed(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGxCharacterSet, CrouchedSpeed, OldValue);
+}
+
+void UGxCharacterSet::OnRep_MaxCrouchedSpeed(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGxCharacterSet, MaxCrouchedSpeed, OldValue);
+}
+
+void UGxCharacterSet::OnRep_AttackSpeedRate(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGxCharacterSet, AttackSpeedRate, OldValue);
+}
+
+void UGxCharacterSet::OnRep_MaxAttackSpeedRate(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGxCharacterSet, MaxAttackSpeedRate, OldValue);
 }
 
 bool UGxCharacterSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)

@@ -26,10 +26,7 @@ bool UGxGameplayAbility_Crouch::CanActivateAbility(const FGameplayAbilitySpecHan
 		return false;
 	}
 
-	gxcheck(ActorInfo, false);
-	gxcheck(ActorInfo->AvatarActor.IsValid(), false);
-
-	const AGxCharacter* GxCharacter = Cast<AGxCharacter>(ActorInfo->AvatarActor.Get());
+	const AGxCharacter* GxCharacter = GetGxCharacterFromActorInfo();
 	gxcheck(GxCharacter, false);
 
 	return GxCharacter->CanCrouch();
@@ -39,9 +36,6 @@ void UGxGameplayAbility_Crouch::ActivateAbility(const FGameplayAbilitySpecHandle
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	AGxCharacter* GxCharacter = GetGxCharacterFromActorInfo();
-	gxcheck(GxCharacter);
-
 	CharacterCrouchStart();
 }
 
@@ -49,9 +43,7 @@ void UGxGameplayAbility_Crouch::InputReleased(const FGameplayAbilitySpecHandle H
 {
 	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
 
-	bool bReplicateEndAbility = true;
-	bool bWasCancelled = false;
-	EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	EndAbility(Handle, ActorInfo, ActivationInfo, /*bReplicateEndAbility*/true, /*bWasCancelled*/false);
 }
 
 void UGxGameplayAbility_Crouch::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -70,6 +62,7 @@ void UGxGameplayAbility_Crouch::CharacterCrouchStart()
 	if (GxCharacter->IsLocallyControlled())
 	{
 		GxCharacter->Crouch();
+		GxCharacter->MovementModeChangedDelegate.AddDynamic(this, &ThisClass::OnMovementModeChangedCallback);
 	}
 }
 
@@ -81,5 +74,19 @@ void UGxGameplayAbility_Crouch::CharacterCrouchStop()
 	if (GxCharacter->IsLocallyControlled())
 	{
 		GxCharacter->UnCrouch();
+		GxCharacter->MovementModeChangedDelegate.RemoveDynamic(this, &ThisClass::OnMovementModeChangedCallback);
+	}
+}
+
+void UGxGameplayAbility_Crouch::OnMovementModeChangedCallback(ACharacter* Character, EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
+{
+	gxcheck(Character);
+
+	UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();
+	gxcheck(MovementComponent);
+
+	if (MovementComponent->IsFalling())
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, /*bReplicateEndAbility*/true, /*bWasCancelled*/false);
 	}
 }

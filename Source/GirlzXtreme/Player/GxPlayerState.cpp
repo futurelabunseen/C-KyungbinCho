@@ -5,7 +5,6 @@
 #include "GxLogChannels.h"
 #include "Player/GxPlayerController.h"
 #include "AbilitySystem/GxAbilitySystemComponent.h"
-#include "AbilitySystem/Attributes/GxCharacterSet.h"
 #include "Character/GxCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -22,6 +21,7 @@ AGxPlayerState::AGxPlayerState(const FObjectInitializer& ObjectInitializer)
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	CharacterSet = ObjectInitializer.CreateDefaultSubobject<UGxCharacterSet>(this, TEXT("CharacterSet"));
+	HealthSet = ObjectInitializer.CreateDefaultSubobject<UGxHealthSet>(this, TEXT("HealthSet"));
 }
 
 AGxPlayerController* AGxPlayerState::GetGxPlayerController() const
@@ -40,32 +40,36 @@ void AGxPlayerState::PostInitializeComponents()
 
 	gxcheck(AbilitySystemComponent);
 	gxcheck(CharacterSet);
+	gxcheck(HealthSet);
 
 	// Subscribe to UGxCharacterSet::WalkSpeed change
-	auto& OnWalkSpeedAttributeChange = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CharacterSet->GetWalkSpeedAttribute());
-	OnWalkSpeedAttributeChangeHandle = OnWalkSpeedAttributeChange.AddUObject(this, &ThisClass::HandleAttributeChanged);
+	OnWalkSpeedAttributeChangeHandle = AbilitySystemComponent->AddOnAttributeChange(CharacterSet->GetWalkSpeedAttribute(), this, &ThisClass::OnAttributeChangedCallback);
 	// Subscribe to UGxCharacterSet::CrouchedSpeed change
-	auto& OnCroucnedSpeedAttributeChange = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CharacterSet->GetCrouchedSpeedAttribute());
-	OnCrouchedSpeedAttributeChangeHandle = OnCroucnedSpeedAttributeChange.AddUObject(this, &ThisClass::HandleAttributeChanged);
+	OnCrouchedSpeedAttributeChangeHandle = AbilitySystemComponent->AddOnAttributeChange(CharacterSet->GetCrouchedSpeedAttribute(), this, &ThisClass::OnAttributeChangedCallback);
+	// Subscribe to UGxHealthSet::Health change
+	OnHealthAttributeChangeHandle = AbilitySystemComponent->AddOnAttributeChange(HealthSet->GetHealthAttribute(), this, &ThisClass::OnAttributeChangedCallback);
 }
 
 void AGxPlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	gxcheck(AbilitySystemComponent);
 	gxcheck(CharacterSet);
+	gxcheck(HealthSet);
 
 	// Unsubscribe to UGxCharacterSet::WalkSpeed change
-	auto& OnWalkSpeedAttributeChange = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CharacterSet->GetWalkSpeedAttribute());
-	OnWalkSpeedAttributeChange.Remove(OnWalkSpeedAttributeChangeHandle);
+	AbilitySystemComponent->RemoveOnAttributeChange(CharacterSet->GetWalkSpeedAttribute(), OnWalkSpeedAttributeChangeHandle);
 	// Unsubscribe to UGxCharacterSet::CrouchedSpeed change
-	auto& OnCroucnedSpeedAttributeChange = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CharacterSet->GetCrouchedSpeedAttribute());
-	OnCroucnedSpeedAttributeChange.Remove(OnCrouchedSpeedAttributeChangeHandle);
+	AbilitySystemComponent->RemoveOnAttributeChange(CharacterSet->GetCrouchedSpeedAttribute(), OnCrouchedSpeedAttributeChangeHandle);
+	// Unsubscribe to UGxHealthSet::Health change
+	AbilitySystemComponent->RemoveOnAttributeChange(HealthSet->GetHealthAttribute(), OnHealthAttributeChangeHandle);
 
 	Super::EndPlay(EndPlayReason);
 }
 
-void AGxPlayerState::HandleAttributeChanged(const FOnAttributeChangeData& AttributeChangedData)
+// [TODO] 이 콜백에서 캐릭터에 직접 접근하지 말고, 델리게이트를 1번 더 써도 될 것 같다.
+void AGxPlayerState::OnAttributeChangedCallback(const FOnAttributeChangeData& AttributeChangedData) const
 {
+	UE_DEBUG_BREAK();
 	AGxCharacter* GxCharacter = Cast<AGxCharacter>(GetPawn());
 	gxcheck(GxCharacter);
 	UCharacterMovementComponent* MovemenetComponent = GxCharacter->GetCharacterMovement();
@@ -82,4 +86,19 @@ void AGxPlayerState::HandleAttributeChanged(const FOnAttributeChangeData& Attrib
 	{
 		MovemenetComponent->MaxWalkSpeedCrouched = NewValue;
 	}
+	else if (ChangedAttribute == HealthSet->GetHealthAttribute())
+	{
+		// [TODO]
+		UE_DEBUG_BREAK();
+	}
+}
+
+int32 AGxPlayerState::GetHealth() const
+{
+	return StaticCast<int32>(HealthSet ? HealthSet->GetHealth() : -1);
+}
+
+int32 AGxPlayerState::GetMaxHealth() const
+{
+	return StaticCast<int32>(HealthSet ? HealthSet->GetMaxHealth() : -1);
 }

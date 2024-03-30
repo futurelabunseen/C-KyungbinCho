@@ -9,7 +9,11 @@
  * PlayerController::ConsoleCommand(DEFAULT_CONSLE_COMMANDS) 를 통해 실행
  */
 
-#define DEFAULT_CONSLE_COMMANDS TEXT( \
-	"ShowDebug AbilitySystem" " | " \
-	"Show Collision" \
-)
+#if !UE_BUILD_SHIPPING
+	#define GX_ENABLE_DEFAULT_CONSOLE_COMMANDS 1
+
+	#define GX_DEFAULT_CONSLE_COMMANDS TEXT( \
+		"ShowDebug AbilitySystem" " | " \
+		"Show Collision" \
+	)
+#endif // #if !UE_BUILD_SHIPPING

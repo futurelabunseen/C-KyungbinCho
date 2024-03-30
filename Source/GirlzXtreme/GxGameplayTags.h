@@ -37,7 +37,6 @@ namespace GxGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_Reset);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_RequestReset);
 
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Damage);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Heal);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cheat_GodMode);
@@ -57,6 +56,8 @@ namespace GxGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Custom);
 	*/
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_IsDead);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Damage);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death);
 
