@@ -2,7 +2,6 @@
 
 #include "GxAbilitySystemComponent.h"
 
-#include "GxLogChannels.h"
 #include "NativeGameplayTags.h"
 #include "AbilitySystem/GxGlobalAbilitySystem.h"
 #include "AbilitySystem/Abilities/GxGameplayAbility.h"
@@ -317,4 +316,41 @@ void UGxAbilitySystemComponent::GetAbilityTargetData(const FGameplayAbilitySpecH
 	{
 		OutTargetDataHandle = ReplicatedData->TargetData;
 	}
+}
+
+void UGxAbilitySystemComponent::GiveAbilities(const TArray<TSubclassOf<UGxGameplayAbility>>& Abilities)
+{
+	for (const auto& Ability : Abilities)
+	{
+		FGameplayAbilitySpec StartSpec(Ability);
+		const UGxGameplayAbility* AbilityCDO = Ability.GetDefaultObject();
+		bool bIsInputAbility = (AbilityCDO->GetGxAbilityInputID() != EGxAbilityInputID::None);
+
+		if (bIsInputAbility)
+		{
+			EGxAbilityInputID InputID = Ability.GetDefaultObject()->GetGxAbilityInputID();
+			StartSpec.InputID = ToUtype(InputID);
+		}
+		GiveAbility(StartSpec);
+	}
+}
+
+void UGxAbilitySystemComponent::ApplyEffects(const TArray<TSubclassOf<UGameplayEffect>>& Effects)
+{
+	FGameplayEffectContextHandle EffectContext = MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	for (const auto& Effect : Effects)
+	{
+		FGameplayEffectSpecHandle NewGEHandle = MakeOutgoingSpec(Effect, /*Level*/1, EffectContext);
+		gxcheck(NewGEHandle.IsValid());
+
+		ApplyGameplayEffectSpecToSelf(*NewGEHandle.Data.Get());
+	}
+}
+
+bool UGxAbilitySystemComponent::RemoveOnAttributeChange(const FGameplayAttribute& Attribute, FDelegateHandle Handle)
+{
+	auto& OnAttributeChange = GetGameplayAttributeValueChangeDelegate(Attribute);
+	return OnAttributeChange.Remove(Handle);
 }

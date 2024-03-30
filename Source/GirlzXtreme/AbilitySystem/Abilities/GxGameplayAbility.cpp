@@ -111,6 +111,12 @@ void UGxGameplayAbility::OnRemoveAbility(const FGameplayAbilityActorInfo* ActorI
 
 }
 
+void UGxGameplayAbility::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
+{
+	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
+
+}
+
 void UGxGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -198,30 +204,31 @@ void UGxGameplayAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, cons
 		}
 	}
 }
-
-FGameplayEffectContextHandle UGxGameplayAbility::MakeEffectContext(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo) const
-{
-	FGameplayEffectContextHandle ContextHandle = Super::MakeEffectContext(Handle, ActorInfo);
-
-	FGxGameplayEffectContext* EffectContext = FGxGameplayEffectContext::ExtractEffectContext(ContextHandle);
-	gxcheck_log(EffectContext);
-	gxcheck_log(ActorInfo);
-
-	AActor* EffectCauser = nullptr;
-	const IGxAbilitySourceInterface* AbilitySource = nullptr;
-	float SourceLevel = 0.0f;
-	GetAbilitySource(Handle, ActorInfo, /*out*/ SourceLevel, /*out*/ AbilitySource, /*out*/ EffectCauser);
-
-	UObject* SourceObject = GetSourceObject(Handle, ActorInfo);
-
-	AActor* Instigator = ActorInfo ? ActorInfo->OwnerActor.Get() : nullptr;
-
-	EffectContext->SetAbilitySource(AbilitySource, SourceLevel);
-	EffectContext->AddInstigator(Instigator, EffectCauser);
-	EffectContext->AddSourceObject(SourceObject);
-
-	return ContextHandle;
-}
+// [TODO]
+// 
+//FGameplayEffectContextHandle UGxGameplayAbility::MakeEffectContext(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo) const
+//{
+//	FGameplayEffectContextHandle ContextHandle = Super::MakeEffectContext(Handle, ActorInfo);
+//
+//	FGxGameplayEffectContext* EffectContext = FGxGameplayEffectContext::ExtractEffectContext(ContextHandle);
+//	gxcheck_log(EffectContext);
+//	gxcheck_log(ActorInfo);
+//
+//	AActor* EffectCauser = nullptr;
+//	const IGxAbilitySourceInterface* AbilitySource = nullptr;
+//	float SourceLevel = 0.0f;
+//	GetAbilitySource(Handle, ActorInfo, /*out*/ SourceLevel, /*out*/ AbilitySource, /*out*/ EffectCauser);
+//
+//	UObject* SourceObject = GetSourceObject(Handle, ActorInfo);
+//
+//	AActor* Instigator = ActorInfo ? ActorInfo->OwnerActor.Get() : nullptr;
+//
+//	EffectContext->SetAbilitySource(AbilitySource, SourceLevel);
+//	EffectContext->AddInstigator(Instigator, EffectCauser);
+//	EffectContext->AddSourceObject(SourceObject);
+//
+//	return ContextHandle;
+//}
 
 void UGxGameplayAbility::ApplyAbilityTagsToGameplayEffectSpec(FGameplayEffectSpec& Spec, FGameplayAbilitySpec* AbilitySpec) const
 {

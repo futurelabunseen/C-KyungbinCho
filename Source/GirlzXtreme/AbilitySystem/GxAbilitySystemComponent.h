@@ -3,6 +3,7 @@
 #pragma once
 
 #include "AbilitySystemComponent.h"
+#include "GxLogChannels.h"
 
 #include "GxAbilitySystemComponent.generated.h"
 
@@ -76,4 +77,25 @@ protected:
 
 	// Handles to abilities that have their input held.
 	TArray<FGameplayAbilitySpecHandle> InputHeldSpecHandles;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Gx|Ability")
+	void GiveAbilities(const TArray<TSubclassOf<UGxGameplayAbility>>& Abilities);
+
+	UFUNCTION(BlueprintCallable, Category = "Gx|Effect")
+	void ApplyEffects(const TArray<TSubclassOf<UGameplayEffect>>& Effects);
+
+	template <class UserClass, typename FuncType>
+	FDelegateHandle AddOnAttributeChange(const FGameplayAttribute& Attribute, const UserClass* Object, FuncType Callback);
+
+	bool RemoveOnAttributeChange(const FGameplayAttribute& Attribute, FDelegateHandle Handle);
 };
+
+template <class UserClass, typename FuncType>
+FDelegateHandle UGxAbilitySystemComponent::AddOnAttributeChange(const FGameplayAttribute& Attribute, const UserClass* Object, FuncType Callback)
+{
+	gxcheck_log(Object);
+
+	auto& OnAttributeChange = GetGameplayAttributeValueChangeDelegate(Attribute);
+	return OnAttributeChange.AddUObject(Object, Callback);
+}

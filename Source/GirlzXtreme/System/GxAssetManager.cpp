@@ -10,8 +10,8 @@
 
 //////////////////////////////////////////////////////////////////////
 
-#define STARTUP_JOB_WEIGHTED(JobFunc, JobWeight) StartupJobs.Add(FGxAssetManagerStartupJob(#JobFunc, [this](const FGxAssetManagerStartupJob& StartupJob, TSharedPtr<FStreamableHandle>& LoadHandle){JobFunc;}, JobWeight))
-#define STARTUP_JOB(JobFunc) STARTUP_JOB_WEIGHTED(JobFunc, 1.f)
+#define GX_STARTUP_JOB_WEIGHTED(JobFunc, JobWeight) StartupJobs.Add(FGxAssetManagerStartupJob(#JobFunc, [this](const FGxAssetManagerStartupJob& StartupJob, TSharedPtr<FStreamableHandle>& LoadHandle){JobFunc;}, JobWeight))
+#define GX_STARTUP_JOB(JobFunc) GX_STARTUP_JOB_WEIGHTED(JobFunc, 1.f)
 
 //////////////////////////////////////////////////////////////////////
 
@@ -49,7 +49,7 @@ void UGxAssetManager::StartInitialLoading()
 	// This does all of the scanning, need to do this now even if loads are deferred
 	Super::StartInitialLoading();
 
-	STARTUP_JOB(InitializeAbilitySystem());
+	GX_STARTUP_JOB(InitializeAbilitySystem());
 
 	// Run all the queued up startup jobs
 	DoAllStartupJobs();

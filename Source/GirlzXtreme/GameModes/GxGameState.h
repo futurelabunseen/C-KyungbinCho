@@ -7,7 +7,6 @@
 
 #include "GxGameState.generated.h"
 
-class UAbilitySystemComponent;
 class UGxAbilitySystemComponent;
 
 /**
