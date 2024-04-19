@@ -14,6 +14,7 @@ class UInputComponent;
 class UGxInputConfig;
 class AGxPlayerController;
 class AGxPlayerState;
+class UGxAnimInstance;
 // [TODO] 임시 코드
 class AGxWeapon;
 class UGxAbilitySystemComponent;
@@ -61,6 +62,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Gx|Character")
 	UGxAbilitySystemComponent* GetGxAbilitySystemComponent() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Gx|Character")
+	UGxAnimInstance* GetGxAnimInstance() const;
+
 protected:
 	//~ACharacter interface
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -87,13 +91,32 @@ public:
 	FORCEINLINE UGxHeroComponent* GetGxHeroComponent() const { return HeroComponent; }
 
 	// [TODO] 임시 코드
+	// [TODO] Weapon Component 같은 것으로 빼는 게 좋을 것 같다.
+	// 기본 무기 클래스들이며 BeginPlay() 에서 Hidden 상태로 캐릭터에 모두 장착된다.
 	UPROPERTY(EditDefaultsOnly, Category = "Gx|Weapon")
-	TSubclassOf<AGxWeapon> DefaultWeapon;
+	TArray<TSubclassOf<AGxWeapon>> DefaultWeaponClasses;
+	// BeginPlay() 에서 스폰돼 장착된 무기들을 저장
+	// 각 GA 를 시전할 때 장착할 무기를 찾아야 하므로 TMap 사용
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gx|Weapon")
-	TObjectPtr<AGxWeapon> CurrentWeapon;
+	TMap<TSubclassOf<AGxWeapon>, TObjectPtr<AGxWeapon>> EquippedWeapons;
+	// 현재 사용중인 무기 리스트
+	// 스킬을 중첩 사용할 때를 대비한 것
+	// Tail 의 무기가 현재 보여지는 무기를 가리킨다.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gx|Weapon")
+	TArray<TObjectPtr<AGxWeapon>> EnabledWeaponList;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Gx|Weapon")
-	AGxWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
+	void EquipWeapons(const TArray<TSubclassOf<AGxWeapon>>& Weapons, bool bHiddenInGame = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Gx|Weapon")
+	AGxWeapon* GetCurrentWeapon() const { return (0 < EnabledWeaponList.Num() ? EnabledWeaponList.Last() : nullptr); }
+
+	UFUNCTION(BlueprintCallable, Category = "Gx|Weapon")
+	AGxWeapon* EnableWeapon(TSubclassOf<AGxWeapon> WeaponClass);
+
+	UFUNCTION(BlueprintCallable, Category = "Gx|Weapon")
+	bool DisableWeapon(AGxWeapon* Weapon);
 
 public:
 	//~ACharacter interface

@@ -3,6 +3,7 @@
 #include "GxGASGun.h"
 
 #include "GxLogChannels.h"
+#include "Weapons/GxAmmoSet.h"
 #include "AbilitySystem/GxAbilitySystemComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GxGASGun)

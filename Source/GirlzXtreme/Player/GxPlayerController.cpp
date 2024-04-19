@@ -2,10 +2,12 @@
 
 #include "GxPlayerController.h"
 
+#include "GxLogChannels.h"
 #include "GxConsoleCommands.h"
 #include "Player/GxPlayerState.h"
 #include "AbilitySystem/GxAbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "UI/GxInGameUI.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GxPlayerController)
 
@@ -26,6 +28,16 @@ UGxAbilitySystemComponent* AGxPlayerController::GetGxAbilitySystemComponent() co
 {
 	const AGxPlayerState* GxPS = GetGxPlayerState();
 	return (GxPS ? GxPS->GetGxAbilitySystemComponent() : nullptr);
+}
+
+void AGxPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GxInGameUI = CreateWidget<UGxInGameUI>(this, GxInGameUIClass);
+	gxcheck(GxInGameUI);
+
+	GxInGameUI->AddToViewport();
 }
 
 void AGxPlayerController::OnPossess(APawn* InPawn)

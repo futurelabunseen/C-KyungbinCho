@@ -37,8 +37,6 @@ namespace GxGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_Reset);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_RequestReset);
 
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Heal);
-
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cheat_GodMode);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cheat_UnlimitedHealth);
 
@@ -58,9 +56,19 @@ namespace GxGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_IsDead);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Damage);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Heal);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_BioticGrenade);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Jumping);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Crouching);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Skill_SwiftStrike);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Skill_BioticGrenade);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ultimate_DragonBlade);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Skill_SwiftStrike);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Skill_BioticGrenade);
 };

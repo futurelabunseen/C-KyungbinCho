@@ -9,6 +9,7 @@
 class APawn;
 class AGxPlayerState;
 class UGxAbilitySystemComponent;
+class UGxInGameUI;
 
 /**
  * AGxPlayerController
@@ -34,4 +35,17 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 	//~End of ACommonPlayerController interface
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Gx|UI")
+	UGxInGameUI* GetGxInGameUI() const { return GxInGameUI; };
+
+protected:
+	virtual void BeginPlay() override;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Gx|UI")
+    TSubclassOf<UGxInGameUI> GxInGameUIClass;
+
+    UPROPERTY(VisibleInstanceOnly, Category = "Gx|UI")
+    UGxInGameUI* GxInGameUI;
 };

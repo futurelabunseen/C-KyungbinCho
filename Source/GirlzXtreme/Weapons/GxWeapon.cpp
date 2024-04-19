@@ -30,6 +30,14 @@ AGxWeapon::AGxWeapon(const FObjectInitializer& ObjectInitializer)
 	PrimaryActorTick.bCanEverTick = false;
 }
 
+void AGxWeapon::SetActorHiddenInGame(bool bNewHidden)
+{
+	if (GetOwner() != nullptr)
+	{
+		Super::SetActorHiddenInGame(bNewHidden);
+	}
+}
+
 void AGxWeapon::Equip(AGxCharacter* NewOwnerCharacter)
 {
 	gxcheck(NewOwnerCharacter);

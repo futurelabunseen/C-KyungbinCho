@@ -9,6 +9,7 @@
 
 UGxAnimInstance::UGxAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+	, bIsPlayingAbilityMontage(false)
 {
 }
 
@@ -22,4 +23,5 @@ void UGxAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
+	bIsPlayingAbilityMontage = (0 < NumAbilityAnimStack);
 }

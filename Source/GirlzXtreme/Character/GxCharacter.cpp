@@ -7,10 +7,12 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Player/GxPlayerController.h"
 #include "Player/GxPlayerState.h"
 #include "Character/GxHeroComponent.h"
 #include "AbilitySystem/GxAbilitySystemComponent.h"
+#include "Animation/GxAnimInstance.h"
 // [TODO] 임시 코드
 #include "Weapons/GxWeapon.h"
 
@@ -24,7 +26,7 @@ AGxCharacter::AGxCharacter(const FObjectInitializer& ObjectInitializer)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
@@ -77,16 +79,63 @@ void AGxCharacter::PossessedBy(AController* NewController)
 
 void AGxCharacter::BeginPlay()
 {
-	// Call the base class  
+	// Call the base class
 	Super::BeginPlay();
 
 	// [TODO] 임시 코드
 	UE_DEBUG_BREAK();
-	gxcheck(DefaultWeapon);
-	CurrentWeapon = GetWorld()->SpawnActor<AGxWeapon>(DefaultWeapon);
-	CurrentWeapon->Equip(this);
-	CurrentWeapon->Unequip();
-	CurrentWeapon->Equip(this);
+	EquipWeapons(DefaultWeaponClasses);
+	EnabledWeaponList.Add(EquippedWeapons[DefaultWeaponClasses[0]]);
+	EnabledWeaponList[0]->SetActorHiddenInGame(false);
+}
+
+void AGxCharacter::EquipWeapons(const TArray<TSubclassOf<AGxWeapon>>& Weapons, bool bHiddenInGame)
+{
+	UWorld* World = GetWorld();
+	gxcheck(World);
+
+	for (auto& WeaponClass : Weapons)
+	{
+		gxcheck(WeaponClass);
+
+		auto& SpawnedWeapon = EquippedWeapons.Emplace(WeaponClass, World->SpawnActor<AGxWeapon>(WeaponClass));
+		SpawnedWeapon->Equip(this);
+		SpawnedWeapon->SetActorHiddenInGame(bHiddenInGame);
+	}
+}
+
+AGxWeapon* AGxCharacter::EnableWeapon(TSubclassOf<AGxWeapon> WeaponClass)
+{
+	if (AGxWeapon* CurrentWeapon = GetCurrentWeapon())
+	{
+		CurrentWeapon->SetActorHiddenInGame(true);
+	}
+	
+	AGxWeapon* NewWeapon = EquippedWeapons[WeaponClass];
+	gxcheck(NewWeapon, nullptr);
+
+	NewWeapon->SetActorHiddenInGame(false);
+	EnabledWeaponList.Add(NewWeapon);
+
+	return NewWeapon;
+}
+
+bool AGxCharacter::DisableWeapon(AGxWeapon* Weapon)
+{
+	gxcheck(Weapon, false);
+	
+	Weapon->SetActorHiddenInGame(true);
+	bool bResult = (0 < EnabledWeaponList.RemoveSingle(Weapon));
+
+	if (0 < EnabledWeaponList.Num())
+	{
+		AGxWeapon* LastWeapon = EnabledWeaponList.Last();
+		gxcheck(LastWeapon, bResult);
+
+		LastWeapon->SetActorHiddenInGame(false);
+	}
+
+	return bResult;
 }
 
 AGxPlayerController* AGxCharacter::GetGxPlayerController() const
@@ -102,14 +151,20 @@ AGxPlayerState* AGxCharacter::GetGxPlayerState() const
 UAbilitySystemComponent* AGxCharacter::GetAbilitySystemComponent() const
 {
 	AGxPlayerState* GxPS = GetGxPlayerState();
-	gxcheck(GxPS, nullptr);
 
-	return GxPS->GetAbilitySystemComponent();
+	return (GxPS ? GxPS->GetAbilitySystemComponent() : nullptr);
 }
 
 UGxAbilitySystemComponent* AGxCharacter::GetGxAbilitySystemComponent() const
 {
 	return Cast<UGxAbilitySystemComponent>(GetAbilitySystemComponent());
+}
+
+UGxAnimInstance* AGxCharacter::GetGxAnimInstance() const
+{
+	USkeletalMeshComponent* SkelMeshComponent = GetMesh();
+
+	return (SkelMeshComponent ? Cast<UGxAnimInstance>(SkelMeshComponent->GetAnimInstance()) : nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////

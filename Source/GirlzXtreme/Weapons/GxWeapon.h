@@ -28,6 +28,8 @@ class AGxWeapon : public AActor
 public:	
 	AGxWeapon(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	virtual void SetActorHiddenInGame(bool bNewHidden) override;
+
 	virtual void Equip(AGxCharacter* NewOwnerCharacter);
 	virtual void Unequip();
 
@@ -38,7 +40,7 @@ protected:
 	// [TODO] StaticMesh, SkeletalMesh 를 한번에 관리하는 방법?
 	// 무기 메시
 	UPROPERTY(VisibleAnywhere, Category = "Gx|Weapon")
-	USkeletalMeshComponent* SkeletalMeshComponent;
+	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
 
 	// 장착 위치
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gx|Weapon")
