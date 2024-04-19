@@ -3,9 +3,11 @@
 #pragma once
 
 #include "Weapons/GxGASWeapon.h"
-#include "Weapons/GxAmmoSet.h"
 
 #include "GxGASGun.generated.h"
+
+class UGxAmmoSet;
+struct FOnAttributeChangeData;
 
 /**
  * AGxGASGun
@@ -27,10 +29,10 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	//~End of AActor interface
 
-	UFUNCTION(BlueprintCallable, Category = "Gx|GASGun")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Gx|GASGun")
 	int32 GetAmmo();
 
-	UFUNCTION(BlueprintCallable, Category = "Gx|GASGun")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Gx|GASGun")
 	int32 GetMaxAmmo();
 
 private:

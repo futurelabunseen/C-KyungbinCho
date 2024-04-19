@@ -19,9 +19,21 @@ class UGxAnimInstance : public UAnimInstance
 public:
 	UGxAnimInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	void SetIsPlayingAbilityMonatage(bool bNewIsPlaying) { bIsPlayingAbilityMontage = bNewIsPlaying; }
+	bool GetIsPlayingAbilityMonatage() const { return bIsPlayingAbilityMontage; }
+
+	void IncreaseAbilityAnimStack() { ++NumAbilityAnimStack; }
+	void DecreaseAbilityAnimStack() { --NumAbilityAnimStack; }
+
 protected:
 	//~UAnimInstance interface
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	//~End of UAnimInstance interface
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gx|AnimInstance")
+    uint8 bIsPlayingAbilityMontage:1;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gx|AnimInstance")
+    uint8 NumAbilityAnimStack;
 };

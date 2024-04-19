@@ -25,7 +25,9 @@ public class GirlzXtreme : ModuleRules
 			"GameplayTasks",
 			"GameplayAbilities",
 			"ModularGameplay",
-			"ModularGameplayActors"
+			"ModularGameplayActors",
+			"MotionWarping",
+			"UMG"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {

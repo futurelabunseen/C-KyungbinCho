@@ -7,6 +7,7 @@
 #include "GxGameplayAbility_FireSemiAuto.generated.h"
 
 class AGameplayAbilityTargetActor;
+struct FGameplayAbilityTargetDataHandle;
 
 /**
  * UGxGameplayAbility_FireSemiAuto

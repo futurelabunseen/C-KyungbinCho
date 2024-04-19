@@ -3,6 +3,9 @@
 #include "GxPlayerState.h"
 
 #include "GxLogChannels.h"
+#include "AbilitySystem/Attributes/GxCharacterSet.h"
+#include "AbilitySystem/Attributes/GxHealthSet.h"
+#include "AbilitySystem/Attributes/GxSkillSet.h"
 #include "Player/GxPlayerController.h"
 #include "AbilitySystem/GxAbilitySystemComponent.h"
 #include "Character/GxCharacter.h"
@@ -22,6 +25,7 @@ AGxPlayerState::AGxPlayerState(const FObjectInitializer& ObjectInitializer)
 
 	CharacterSet = ObjectInitializer.CreateDefaultSubobject<UGxCharacterSet>(this, TEXT("CharacterSet"));
 	HealthSet = ObjectInitializer.CreateDefaultSubobject<UGxHealthSet>(this, TEXT("HealthSet"));
+	SkillSet = ObjectInitializer.CreateDefaultSubobject<UGxSkillSet>(this, TEXT("SkillSet"));
 }
 
 AGxPlayerController* AGxPlayerState::GetGxPlayerController() const
@@ -41,6 +45,7 @@ void AGxPlayerState::PostInitializeComponents()
 	gxcheck(AbilitySystemComponent);
 	gxcheck(CharacterSet);
 	gxcheck(HealthSet);
+	gxcheck(SkillSet);
 
 	// Subscribe to UGxCharacterSet::WalkSpeed change
 	OnWalkSpeedAttributeChangeHandle = AbilitySystemComponent->AddOnAttributeChange(CharacterSet->GetWalkSpeedAttribute(), this, &ThisClass::OnAttributeChangedCallback);
@@ -48,6 +53,8 @@ void AGxPlayerState::PostInitializeComponents()
 	OnCrouchedSpeedAttributeChangeHandle = AbilitySystemComponent->AddOnAttributeChange(CharacterSet->GetCrouchedSpeedAttribute(), this, &ThisClass::OnAttributeChangedCallback);
 	// Subscribe to UGxHealthSet::Health change
 	OnHealthAttributeChangeHandle = AbilitySystemComponent->AddOnAttributeChange(HealthSet->GetHealthAttribute(), this, &ThisClass::OnAttributeChangedCallback);
+	// Subscribe to UGxSkillSet::UltimateGauge change
+	OnUltimateGaugeAttributeChangeHandle = AbilitySystemComponent->AddOnAttributeChange(SkillSet->GetUltimateGaugeAttribute(), this, &ThisClass::OnAttributeChangedCallback);
 }
 
 void AGxPlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -55,6 +62,7 @@ void AGxPlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	gxcheck(AbilitySystemComponent);
 	gxcheck(CharacterSet);
 	gxcheck(HealthSet);
+	gxcheck(SkillSet);
 
 	// Unsubscribe to UGxCharacterSet::WalkSpeed change
 	AbilitySystemComponent->RemoveOnAttributeChange(CharacterSet->GetWalkSpeedAttribute(), OnWalkSpeedAttributeChangeHandle);
@@ -62,6 +70,8 @@ void AGxPlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	AbilitySystemComponent->RemoveOnAttributeChange(CharacterSet->GetCrouchedSpeedAttribute(), OnCrouchedSpeedAttributeChangeHandle);
 	// Unsubscribe to UGxHealthSet::Health change
 	AbilitySystemComponent->RemoveOnAttributeChange(HealthSet->GetHealthAttribute(), OnHealthAttributeChangeHandle);
+	// Unsubscribe to UGxSkillSet::UltimateGauge change
+	AbilitySystemComponent->RemoveOnAttributeChange(SkillSet->GetUltimateGaugeAttribute(), OnUltimateGaugeAttributeChangeHandle);
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -91,6 +101,11 @@ void AGxPlayerState::OnAttributeChangedCallback(const FOnAttributeChangeData& At
 		// [TODO]
 		UE_DEBUG_BREAK();
 	}
+	else if (ChangedAttribute == SkillSet->GetUltimateGaugeAttribute())
+	{
+		// [TODO]
+		UE_DEBUG_BREAK();
+	}
 }
 
 int32 AGxPlayerState::GetHealth() const
@@ -101,4 +116,14 @@ int32 AGxPlayerState::GetHealth() const
 int32 AGxPlayerState::GetMaxHealth() const
 {
 	return StaticCast<int32>(HealthSet ? HealthSet->GetMaxHealth() : -1);
+}
+
+float AGxPlayerState::GetUltimateGauge() const
+{
+	return (SkillSet ? SkillSet->GetUltimateGauge() : -1.0f);
+}
+
+float AGxPlayerState::GetMaxUltimateGauge() const
+{
+	return (SkillSet ? SkillSet->GetMaxUltimateGauge() : -1.0f);
 }

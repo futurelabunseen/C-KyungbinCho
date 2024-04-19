@@ -32,8 +32,6 @@ namespace GxGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Reset, "GameplayEvent.Reset", "Event that fires once a player reset is executed.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_RequestReset, "GameplayEvent.RequestReset", "Event to request a player's pawn to be instantly replaced with a new one at a valid spawn location.");
 
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_Heal, "SetByCaller.Heal", "SetByCaller tag used by healing gameplay effects.");
-
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cheat_GodMode, "Cheat.GodMode", "GodMode cheat is active on the owner.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cheat_UnlimitedHealth, "Cheat.UnlimitedHealth", "UnlimitedHealth cheat is active on the owner.");
 
@@ -55,9 +53,19 @@ namespace GxGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_ActivateFail_IsDead, "Ability.ActivateFail.IsDead", "Ability failed to activate because its owner is dead.");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_Damage, "SetByCaller.Damage", "SetByCaller tag used by damage gameplay effects.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_Heal, "SetByCaller.Heal", "SetByCaller tag used by healing gameplay effects.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_BioticGrenade, "SetByCaller.BioticGrenade", "SetByCaller tag used by biotic grenade gameplay effects.");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death, "Status.Death", "Target has the death status.");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Jumping, "Movement.Mode.Jumping", "Custom Character movement tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Crouching, "Movement.Mode.Crouching", "Custom Character movement tag");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Combat_Skill_SwiftStrike, "Combat.Skill.SwiftStrike", "Swift Strike skill tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Combat_Skill_BioticGrenade, "Combat.Skill.BioticGrenade", "Biotic Grenade skill tag");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Combat_Ultimate_DragonBlade, "Combat.Ultimate.DragonBlade", "Dragon Blade ultimate tag");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Skill_SwiftStrike, "Cooldown.Skill.SwiftStrike", "Swift Strike skill cooldown tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Skill_BioticGrenade, "Cooldown.Skill.BioticGrenade", "Biotic Grenade skill cooldown tag");
 }

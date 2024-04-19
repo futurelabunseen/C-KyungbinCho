@@ -4,13 +4,15 @@
 
 #include "ModularPlayerState.h"
 #include "AbilitySystemInterface.h"
-#include "AbilitySystem/Attributes/GxCharacterSet.h"
-#include "AbilitySystem/Attributes/GxHealthSet.h"
 
 #include "GxPlayerState.generated.h"
 
 class AGxPlayerController;
 class UGxAbilitySystemComponent;
+class UGxCharacterSet;
+class UGxHealthSet;
+class UGxSkillSet;
+struct FOnAttributeChangeData;
 
 /**
  * AGxPlayerState
@@ -55,17 +57,28 @@ private:
 	// The health attribute set sub-object used by damageable entities.
 	UPROPERTY(VisibleAnywhere, Category = "Gx|PlayerState")
 	TObjectPtr<UGxHealthSet> HealthSet;
+	
+	// The skill attribute set sub-object used by player characters.
+	UPROPERTY(VisibleAnywhere, Category = "Gx|PlayerState")
+	TObjectPtr<UGxSkillSet> SkillSet;
 
 	void OnAttributeChangedCallback(const FOnAttributeChangeData& AttributeChangedData) const;
 
 	FDelegateHandle OnWalkSpeedAttributeChangeHandle;
 	FDelegateHandle OnCrouchedSpeedAttributeChangeHandle;
 	FDelegateHandle OnHealthAttributeChangeHandle;
+	FDelegateHandle OnUltimateGaugeAttributeChangeHandle;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Gx|PlayerState")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Gx|PlayerState")
 	int32 GetHealth() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Gx|PlayerState")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Gx|PlayerState")
 	int32 GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Gx|PlayerState")
+	float GetUltimateGauge() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Gx|PlayerState")
+	float GetMaxUltimateGauge() const;
 };
