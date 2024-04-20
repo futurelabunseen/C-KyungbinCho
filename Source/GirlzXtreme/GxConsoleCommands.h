@@ -14,6 +14,7 @@
 
 	#define GX_DEFAULT_CONSLE_COMMANDS TEXT( \
 		"ShowDebug AbilitySystem" " | " \
-		"Show Collision" \
+		"Show Collision" " | " \
+		"t.MaxFPS 60" \
 	)
 #endif // #if !UE_BUILD_SHIPPING
