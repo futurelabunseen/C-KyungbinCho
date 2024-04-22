@@ -6,3 +6,4 @@
 // GxLogChannels
 
 DEFINE_LOG_CATEGORY(LogGx);
+DEFINE_LOG_CATEGORY(LogGxNet);

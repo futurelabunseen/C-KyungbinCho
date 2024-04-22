@@ -13,10 +13,12 @@
  * 모듈형 게임플레이와 함께 사용될 수 있다.
  */
 UCLASS(Meta = (ShortTooltip = "The base game mode class used by this project."))
-class AGxGameMode : public AModularGameModeBase
+class AGxGameMode : public AModularGameMode
 {
 	GENERATED_BODY()
 
 public:
 	AGxGameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 };

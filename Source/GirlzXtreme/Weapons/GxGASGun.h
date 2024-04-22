@@ -37,7 +37,7 @@ public:
 
 private:
 	// The ammo attribute set sub-object used by GAS guns.
-	UPROPERTY(VisibleAnywhere, Category = "Gx|GASGun")
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Gx|GASGun")
 	TObjectPtr<UGxAmmoSet> AmmoSet;
 
 	void OnAttributeChangedCallback(const FOnAttributeChangeData& AttributeChangedData) const;

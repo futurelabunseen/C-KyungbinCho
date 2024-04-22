@@ -14,5 +14,6 @@ public class GirlzXtremeServerTarget : TargetRules
 		ExtraModuleNames.Add("GirlzXtreme");
 
 		bUseChecksInShipping = true;
+		bUseLoggingInShipping = true;
 	}
 }

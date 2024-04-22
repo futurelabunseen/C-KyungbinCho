@@ -51,15 +51,15 @@ private:
 	TObjectPtr<UGxAbilitySystemComponent> AbilitySystemComponent;
 
 	// The character attribute set sub-object used by player characters.
-	UPROPERTY(VisibleAnywhere, Category = "Gx|PlayerState")
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Gx|PlayerState")
 	TObjectPtr<UGxCharacterSet> CharacterSet;
 
 	// The health attribute set sub-object used by damageable entities.
-	UPROPERTY(VisibleAnywhere, Category = "Gx|PlayerState")
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Gx|PlayerState")
 	TObjectPtr<UGxHealthSet> HealthSet;
 	
 	// The skill attribute set sub-object used by player characters.
-	UPROPERTY(VisibleAnywhere, Category = "Gx|PlayerState")
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Gx|PlayerState")
 	TObjectPtr<UGxSkillSet> SkillSet;
 
 	void OnAttributeChangedCallback(const FOnAttributeChangeData& AttributeChangedData) const;
