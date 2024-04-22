@@ -34,10 +34,13 @@ void AGxPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GxInGameUI = CreateWidget<UGxInGameUI>(this, GxInGameUIClass);
-	gxcheck(GxInGameUI);
+	if (IsLocalController())
+	{
+		GxInGameUI = CreateWidget<UGxInGameUI>(this, GxInGameUIClass);
+		gxcheck(GxInGameUI);
 
-	GxInGameUI->AddToViewport();
+		GxInGameUI->AddToViewport();
+	}
 }
 
 void AGxPlayerController::OnPossess(APawn* InPawn)
@@ -45,8 +48,11 @@ void AGxPlayerController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 #if GX_ENABLE_DEFAULT_CONSOLE_COMMANDS
-	// Execute default console commands for debugging.
-	ConsoleCommand(GX_DEFAULT_CONSLE_COMMANDS);
+	if (IsLocalController())
+	{
+		// Execute default console commands for debugging.
+		ConsoleCommand(GX_DEFAULT_CONSLE_COMMANDS);
+	}
 #endif // #if GX_ENABLE_DEFAULT_CONSOLE_COMMANDS
 }
 

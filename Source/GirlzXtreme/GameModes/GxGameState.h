@@ -16,7 +16,7 @@ class UGxAbilitySystemComponent;
  * 모듈형 게임플레이와 함께 사용될 수 있다.
  */
 UCLASS(Meta = (ShortTooltip = "The base game state class used by this project."))
-class AGxGameState : public AModularGameStateBase, public IAbilitySystemInterface
+class AGxGameState : public AModularGameState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 

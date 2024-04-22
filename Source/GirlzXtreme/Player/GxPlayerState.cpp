@@ -26,6 +26,8 @@ AGxPlayerState::AGxPlayerState(const FObjectInitializer& ObjectInitializer)
 	CharacterSet = ObjectInitializer.CreateDefaultSubobject<UGxCharacterSet>(this, TEXT("CharacterSet"));
 	HealthSet = ObjectInitializer.CreateDefaultSubobject<UGxHealthSet>(this, TEXT("HealthSet"));
 	SkillSet = ObjectInitializer.CreateDefaultSubobject<UGxSkillSet>(this, TEXT("SkillSet"));
+
+	NetUpdateFrequency = 30.f;
 }
 
 AGxPlayerController* AGxPlayerState::GetGxPlayerController() const

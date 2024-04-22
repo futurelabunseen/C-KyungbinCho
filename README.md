@@ -1,11 +1,10 @@
-#### 언리얼 엔진 5로 제작 중인 팀 기반 멀티플레이어 하이퍼 슈팅 장르 [Girlz Xtreme](#)입니다.
+## 기능 5. 데디케이티드 서버 레벨 이동, 디버깅
+### 작업 완료
 
-인원: 1인 개발
+[DS] <br/>
+ㄴ 로비 레벨 -> 플레이 레벨 Transition (향후 위치 이동 방식으로 변경 예정) <br/>
+ㄴ 디버깅용 로그 매크로, 위젯 컴포넌트 추가 <br/>
 
-코딩 기여도: ![100%](https://progress-bar.dev/100)
-
-개발 기간: 2024/03/17 - 
-
-개발 환경
-- Unreal Engine
-- C++
+[GAS] <br/>
+ㄴ AttributeSet 에 Transient 속성 지정 <br/>
+ㄴ PlayerState 의 NetUpdateFrequency 30 으로 조정 <br/>
