@@ -86,6 +86,8 @@ void UGxGameplayAbility_FireAutomatic::OnPerformActionCallback(int32 ActionNumbe
 
 void UGxGameplayAbility_FireAutomatic::OnFinishedCallback(int32 ActionNumber)
 {
+	return;
+
 	// [TODO] 재장전
 	UE_DEBUG_BREAK();
 	GX_LOG(Warning, TEXT("Reloading ..."));

@@ -61,10 +61,15 @@ namespace GxGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Jumping, "Movement.Mode.Jumping", "Custom Character movement tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Crouching, "Movement.Mode.Crouching", "Custom Character movement tag");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Combat_Attack_FireAutomatic, "Combat.Attack.FireAutomatic", "Fire Automatic attack tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Combat_Attack_FireSemiAuto, "Combat.Attack.FireSemiAuto", "Fire Semi-automatic attack tag");
+
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Combat_Skill_SwiftStrike, "Combat.Skill.SwiftStrike", "Swift Strike skill tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Combat_Skill_BioticGrenade, "Combat.Skill.BioticGrenade", "Biotic Grenade skill tag");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Combat_Ultimate_DragonBlade, "Combat.Ultimate.DragonBlade", "Dragon Blade ultimate tag");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Combat_State_Reload, "Combat.State.Reload", "Reload state tag");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Skill_SwiftStrike, "Cooldown.Skill.SwiftStrike", "Swift Strike skill cooldown tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Skill_BioticGrenade, "Cooldown.Skill.BioticGrenade", "Biotic Grenade skill cooldown tag");

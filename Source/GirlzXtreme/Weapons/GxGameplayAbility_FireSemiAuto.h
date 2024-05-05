@@ -7,6 +7,7 @@
 #include "GxGameplayAbility_FireSemiAuto.generated.h"
 
 class AGameplayAbilityTargetActor;
+class UAnimMontage;
 struct FGameplayAbilityTargetDataHandle;
 
 /**
@@ -43,4 +44,14 @@ private:
 
 	UFUNCTION()
 	void CancelledCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Gx|FireSemiAuto")
+	TObjectPtr<UAnimMontage> FireMontage;
+
+	UFUNCTION()
+	void OnFinishedCallback();
+	
+	UFUNCTION()
+	void OnCancelledCallback();
 };
