@@ -7,6 +7,7 @@
 #include "GxGameplayTags.h"
 #include "Player/GxPlayerController.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
+#include "Interaction/Tasks/GxAbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/GxAbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 
@@ -20,6 +21,8 @@ UGxGameplayAbility_FireSemiAuto::UGxGameplayAbility_FireSemiAuto(const FObjectIn
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+
+	bRetriggerInstancedAbility = true;
 }
 
 void UGxGameplayAbility_FireSemiAuto::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -46,6 +49,14 @@ void UGxGameplayAbility_FireSemiAuto::ActivateAbility(const FGameplayAbilitySpec
 
 	WaitTargetDataTask->FinishSpawningActor(this, SpawnedActor);
 	WaitTargetDataTask->ReadyForActivation();
+
+	UGxAbilityTask_PlayMontageAndWait* GxPlayMontageAndWaitTask = UGxAbilityTask_PlayMontageAndWait::CreateGxPlayMontageAndWaitProxy(this, NAME_None, FireMontage);
+	gxcheck(GxPlayMontageAndWaitTask);
+
+	GxPlayMontageAndWaitTask->OnCompleted.AddDynamic(this, &ThisClass::OnFinishedCallback);
+	GxPlayMontageAndWaitTask->OnInterrupted.AddDynamic(this, &ThisClass::OnCancelledCallback);
+	GxPlayMontageAndWaitTask->OnCancelled.AddDynamic(this, &ThisClass::OnCancelledCallback);
+	GxPlayMontageAndWaitTask->ReadyForActivation();
 }
 
 void UGxGameplayAbility_FireSemiAuto::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -91,10 +102,20 @@ void UGxGameplayAbility_FireSemiAuto::ValidDataCallback(const FGameplayAbilityTa
 		}
 	}
 
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, /*bReplicateEndAbility*/true, /*bWasCancelled*/false);
+	//EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, /*bReplicateEndAbility*/true, /*bWasCancelled*/false);
 }
 
 void UGxGameplayAbility_FireSemiAuto::CancelledCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
+{
+	//EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, /*bReplicateEndAbility*/true, /*bWasCancelled*/true);
+}
+
+void UGxGameplayAbility_FireSemiAuto::OnFinishedCallback()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, /*bReplicateEndAbility*/true, /*bWasCancelled*/false);
+}
+
+void UGxGameplayAbility_FireSemiAuto::OnCancelledCallback()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, /*bReplicateEndAbility*/true, /*bWasCancelled*/true);
 }

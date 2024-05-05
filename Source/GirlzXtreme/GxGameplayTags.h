@@ -64,10 +64,15 @@ namespace GxGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Jumping);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Crouching);
 
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Attack_FireAutomatic);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Attack_FireSemiAuto);
+
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Skill_SwiftStrike);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Skill_BioticGrenade);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ultimate_DragonBlade);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_State_Reload);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Skill_SwiftStrike);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Skill_BioticGrenade);
