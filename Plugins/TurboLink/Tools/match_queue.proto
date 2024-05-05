@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package match;
+
+service Match
+{
+    rpc GetMatchServer(Empty) returns (MatchResponse) { }
+
+    rpc AddToMatchQueueFront(AddRequest) returns (AddResponse) { }
+    rpc AddToMatchQueueRear(AddRequest) returns (AddResponse) { }
+    rpc RemoveFromMatchQueue(RemoveRequest) returns (RemoveResponse) { }
+}
+
+message Empty { }
+
+message MatchResponse
+{
+    bool success = 1;
+    string matched_server = 2;
+}
+
+message AddRequest
+{
+    string server_address = 1;
+}
+
+message AddResponse
+{
+    bool success = 1;
+}
+
+message RemoveRequest
+{
+    string server_address = 1;
+}
+
+message RemoveResponse
+{
+    bool success = 1;
+}

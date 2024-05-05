@@ -169,7 +169,7 @@ void UGxGameplayAbility_SwiftStrike::OnOverlapBegin(UPrimitiveComponent* Overlap
 	if (HitActors.Find(OtherActor) == nullptr)
 	{
 		HitActors.Add(OtherActor);
-		GX_LOG(Warning, TEXT("%s"), *OtherActor->GetName());
+		GX_NET_LOG_SCREEN(FColor::Green, TEXT("%s Hit"), *OtherActor->GetName());
 	}
 }
 

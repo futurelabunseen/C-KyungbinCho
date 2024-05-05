@@ -1,0 +1,40 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.4",
+	"FriendlyName": "TurboLink",
+	"Description": "Enables Google gRPC work with Unreal Engine using C++ and Blueprint",
+	"Category": "Other",
+	"CreatedBy": "Neo Jin",
+	"CreatedByURL": "https://github.com/thejinchao/turbolink",
+	"DocsURL": "https://github.com/thejinchao/turbolink/blob/main/README.md",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"EnabledByDefault": true,
+	"CanContainContent": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "TurboLinkGrpc",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Mac",
+				"Linux",
+				"IOS",
+				"Android",
+				"PS5"
+			]
+		},
+		{
+			"Name": "TurboLinkEditor",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Mac"
+			]
+		}
+	]
+}

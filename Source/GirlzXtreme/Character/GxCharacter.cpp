@@ -89,6 +89,20 @@ void AGxCharacter::BeginPlay()
 	EnabledWeaponList[0]->SetActorHiddenInGame(false);
 }
 
+void AGxCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	TArray<AActor*> AttachedActors;
+
+	GetAttachedActors(AttachedActors, false);
+
+	for (AActor*& AttachedActor : AttachedActors)
+	{
+		AttachedActor->Destroy();
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
 void AGxCharacter::EquipWeapons(const TArray<TSubclassOf<AGxWeapon>>& Weapons, bool bHiddenInGame)
 {
 	UWorld* World = GetWorld();

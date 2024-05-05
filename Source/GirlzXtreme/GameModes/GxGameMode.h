@@ -20,5 +20,10 @@ class AGxGameMode : public AModularGameMode
 public:
 	AGxGameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gx|GameMode")
+	int32 MaxPlayers;
 };

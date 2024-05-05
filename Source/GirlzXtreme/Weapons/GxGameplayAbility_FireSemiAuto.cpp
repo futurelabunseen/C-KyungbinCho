@@ -85,10 +85,10 @@ void UGxGameplayAbility_FireSemiAuto::ValidDataCallback(const FGameplayAbilityTa
 				Payload.EventMagnitude = Damage;
 				Payload.EventTag = GxGameplayTags::SetByCaller_Damage;
 				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitActor, GxGameplayTags::SetByCaller_Damage, Payload);
-				GX_LOG(Warning, TEXT("SetByCaller.Damage ==> %s ..."), *(HitResult.GetActor()->GetName()));
+				GX_NET_LOG_SCREEN(FColor::Green, TEXT("SetByCaller.Damage ==> %s ..."), *(HitResult.GetActor()->GetName()));
 			}
 
-			GX_LOG(Warning, TEXT("Target %s Detected"), *(HitResult.GetActor()->GetName()));
+			GX_NET_LOG_SCREEN(FColor::Green, TEXT("Target %s Detected"), *(HitResult.GetActor()->GetName()));
 #if ENABLE_DRAW_DEBUG
 			AGxPlayerController* GxPC = GetGxPlayerControllerFromActorInfo();
 			gxcheck(GxPC);
