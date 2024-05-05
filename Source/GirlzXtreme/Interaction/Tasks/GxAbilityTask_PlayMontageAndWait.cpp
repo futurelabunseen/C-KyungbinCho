@@ -44,9 +44,9 @@ void UGxAbilityTask_PlayMontageAndWait::Activate()
 	gxcheck(GxAnimInstance);
 
 	float startTime = 0, endTime = 0;
-	GX_LOG(Warning, TEXT("%f"), MontageToPlay->GetSectionLength(0));
+	GX_NET_LOG_SCREEN_TICK(FColor::White, TEXT("%f"), MontageToPlay->GetSectionLength(0));
 	MontageToPlay->GetSectionStartAndEndTime(0, startTime, endTime);
-	GX_LOG(Warning, TEXT("%f %f"), startTime, endTime);
+	GX_NET_LOG_SCREEN_TICK(FColor::White, TEXT("%f %f"), startTime, endTime);
 
 	GxAnimInstance->IncreaseAbilityAnimStack();
 }

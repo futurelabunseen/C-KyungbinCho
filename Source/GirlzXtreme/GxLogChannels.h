@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Logging/LogMacros.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 /**
  * GxLogChannels
@@ -18,10 +19,14 @@ DECLARE_LOG_CATEGORY_EXTERN(LogGx, Log, All);
 #define GX_LOG_CALLINFO(Verbosity)		UE_LOG(LogGx, Verbosity, TEXT("%s"), *GX_CALLINFO)
 // 로그 + 호출 함수 정보 출력
 #define GX_LOG(Verbosity, Format, ...)	UE_LOG(LogGx, Verbosity, TEXT("%s %s"), *GX_CALLINFO, *FString::Printf(Format, ##__VA_ARGS__))
+// 화면에 로그 출력
+#define	GX_LOG_SCREEN(Format, ...)	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, GX_CALLINFO + FString::Printf(Format, ##__VA_ARGS__))
+// Tick 에서 화면에 로그 출력
+#define	GX_LOG_SCREEN_TICK(Format, ...)	GEngine->AddOnScreenDebugMessage(-1, FApp::GetDeltaTime(), FColor::Green, GX_CALLINFO + FString::Printf(Format, ##__VA_ARGS__))
 // 표현식이 무효하면 로그 출력 => 즉시 반환
-#define gxcheck(Expr, /*Return value when Expr is invalid*/...)		{ if (!(Expr)) { GX_LOG(Error, TEXT("ASSERTION : %s"), TEXT("'"#Expr"'")); return __VA_ARGS__; } }
+#define gxcheck(Expr, /*Return value when Expr is invalid*/...)		{ if (!(Expr)) { if (UKismetSystemLibrary::IsStandalone(GetWorld())) { GX_LOG(Error, TEXT("ASSERTION : %s"), TEXT("'"#Expr"'")); } else { GX_NET_LOG_SCREEN(FColor::Red, TEXT("INVALID : %s"), TEXT("'"#Expr"'")); } return __VA_ARGS__; } }
 // 표현식이 무효하면 로그만 출력
-#define gxcheck_log(Expr)		{ if (!(Expr)) { GX_LOG(Error, TEXT("INVALID : %s"), TEXT("'"#Expr"'")); } }
+#define gxcheck_log(Expr)		{ if (!(Expr)) { if (UKismetSystemLibrary::IsStandalone(GetWorld())) { GX_LOG(Error, TEXT("INVALID : %s"), TEXT("'"#Expr"'")); } else { GX_NET_LOG_SCREEN(FColor::Red, TEXT("INVALID : %s"), TEXT("'"#Expr"'")); } } }
 
 DECLARE_LOG_CATEGORY_EXTERN(LogGxNet, Log, All);
 
@@ -36,3 +41,5 @@ DECLARE_LOG_CATEGORY_EXTERN(LogGxNet, Log, All);
 
 #define GX_NET_LOG(Verbosity, Format, ...) UE_LOG(LogGxNet, Verbosity, TEXT("[%s]\t[%s / %s] %s %s"), GX_NETMODEINFO, GX_LOCALROLEINFO, GX_REMOTEROLEINFO, *GX_CALLINFO, *FString::Printf(Format, ##__VA_ARGS__))
 #define GX_NET_SUBLOG(Verbosity, Format, ...) UE_LOG(LogGxNet, Verbosity, TEXT("[%s]\t[%s / %s] %s %s"), GX_NETMODEINFO, GX_SUBLOCALROLEINFO, GX_SUBREMOTEROLEINFO, *GX_CALLINFO, *FString::Printf(Format, ##__VA_ARGS__))
+#define GX_NET_LOG_SCREEN(Color, Format, ...) UKismetSystemLibrary::PrintText(GetWorld(), FText::FromString(GX_CALLINFO + FString::Printf(Format, ##__VA_ARGS__)), true, true, Color, 10.f)
+#define GX_NET_LOG_SCREEN_TICK(Color, Format, ...) UKismetSystemLibrary::PrintText(GetWorld(), FText::FromString(GX_CALLINFO + FString::Printf(Format, ##__VA_ARGS__)), true, true, Color, FApp::GetDeltaTime())

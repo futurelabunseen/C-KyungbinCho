@@ -57,6 +57,9 @@ Session.vim
 .vsconfig
 !/.editorconfig
 
+# Rider
+.idea
+
 # Ignore asset files from Content dir.
 /Content/Assets/**
 /Plugins/**/Content/Assets/**
@@ -64,3 +67,9 @@ Session.vim
 # Ignore asset files from RawContent dir.
 /RawContent/Assets/**
 /Plugins/**/RawContent/Assets/**
+
+# Ignore too large files.
+/Plugins/TurboLink/Source/ThirdParty/**
+
+# ETC
+!/Plugins/TurboLink/Tools/**

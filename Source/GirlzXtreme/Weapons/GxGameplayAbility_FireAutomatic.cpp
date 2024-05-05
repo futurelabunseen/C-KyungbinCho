@@ -80,7 +80,7 @@ void UGxGameplayAbility_FireAutomatic::OnPerformActionCallback(int32 ActionNumbe
 		gxcheck(GxGASGun);
 
 		int32 CurrentAmmo = GxGASGun->GetAmmo();
-		GX_LOG(Warning, TEXT("Ammo: %d"), CurrentAmmo);
+		GX_NET_LOG_SCREEN_TICK(FColor::White, TEXT("Ammo: %d"), CurrentAmmo);
 	}
 }
 
@@ -90,7 +90,7 @@ void UGxGameplayAbility_FireAutomatic::OnFinishedCallback(int32 ActionNumber)
 
 	// [TODO] 재장전
 	UE_DEBUG_BREAK();
-	GX_LOG(Warning, TEXT("Reloading ..."));
+	GX_NET_LOG_SCREEN(FColor::White, TEXT("Reloading ..."));
 
 	ApplyGameplayEffectToGun(ReloadEffect);
 

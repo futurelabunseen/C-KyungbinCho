@@ -35,6 +35,7 @@ public:
 
 	//~UAbilitySystemComponent interface
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
+	virtual void FindAllAbilitySpecsFromInputID(int32 InputID, TArray<const FGameplayAbilitySpec*>& OutAbilitySpecs) const override;
 	//~End of UAbilitySystemComponent interface
 
 	typedef TFunctionRef<bool(const UGxGameplayAbility* GxAbility, FGameplayAbilitySpecHandle Handle)> TShouldCancelAbilityFunc;

@@ -78,6 +78,23 @@ void UGxAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActo
 	}
 }
 
+void UGxAbilitySystemComponent::FindAllAbilitySpecsFromInputID(int32 InputID, TArray<const FGameplayAbilitySpec*>& OutAbilitySpecs) const
+{
+	// ignore invalid inputs
+	if (InputID != INDEX_NONE)
+	{
+		// iterate through all abilities
+		for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)
+		{
+			// add maching abilities to the list
+			if (Spec.InputID == InputID)
+			{
+				OutAbilitySpecs.Add(&Spec);
+			}
+		}
+	}
+}
+
 void UGxAbilitySystemComponent::TryActivateAbilitiesOnSpawn()
 {
 	ABILITYLIST_SCOPE_LOCK();
@@ -116,7 +133,7 @@ void UGxAbilitySystemComponent::CancelAbilitiesByFunc(TShouldCancelAbilityFunc S
 					}
 					else
 					{
-						GX_LOG(Error, TEXT("CancelAbilitiesByFunc: Can't cancel ability [%s] because CanBeCanceled is false."), *GxAbilityInstance->GetName());
+						GX_NET_SUBLOG(Error, TEXT("CancelAbilitiesByFunc: Can't cancel ability [%s] because CanBeCanceled is false."), *GxAbilityInstance->GetName());
 					}
 				}
 			}

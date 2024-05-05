@@ -39,12 +39,12 @@ FHitResult AGxGameplayAbilityTargetActor_SweepMulti::PerformTrace(AActor* InSour
 	// ------------------------------------------------------
 
 	FHitResult ReturnHitResult;
-	GX_LOG(Warning, TEXT("Start: %s"), *ViewStart.ToString());
-	GX_LOG(Warning, TEXT("End: %s"), *(ViewStart + (ViewRot.Vector() * 400.f)).ToString());
+	GX_NET_LOG_SCREEN(FColor::White, TEXT("Start: %s"), *ViewStart.ToString());
+	GX_NET_LOG_SCREEN(FColor::White, TEXT("End: %s"), *(ViewStart + (ViewRot.Vector() * 400.f)).ToString());
 	SweepWithFilter(ReturnHitResult, InSourceActor->GetWorld(), Filter, ViewStart, ViewStart + (ViewRot.Vector() * 400.f), ViewRot.Quaternion(), FCollisionShape::MakeCapsule(50.0f, 50.0f), TraceProfile.Name, Params);
 
 #if ENABLE_DRAW_DEBUG
-	GX_LOG(Warning, TEXT("Sphere: %s"), *(ViewStart + (ViewRot.Vector() * 400.f)).ToString());
+	GX_NET_LOG_SCREEN(FColor::White, TEXT("Sphere: %s"), *(ViewStart + (ViewRot.Vector() * 400.f)).ToString());
 	//DrawDebugCapsule(GetWorld(), (ViewStart + (ViewStart + (ViewRot.Vector() * 400.f))) / 2.f, 200.0f, 16, FColor::Green);
 #endif
 	return ReturnHitResult;

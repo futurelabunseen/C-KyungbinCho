@@ -24,7 +24,7 @@ UGxAssetManager::UGxAssetManager(const FObjectInitializer& ObjectInitializer)
 
 UGxAssetManager& UGxAssetManager::Get()
 {
-	gxcheck_log(GEngine);
+	check(GEngine);
 
 	if (UGxAssetManager* Singleton = Cast<UGxAssetManager>(GEngine->AssetManager))
 	{
@@ -123,7 +123,7 @@ void UGxAssetManager::DoAllStartupJobs()
 
 	StartupJobs.Empty();
 
-	GX_LOG(Display, TEXT("All startup jobs took %.2f seconds to complete"), FPlatformTime::Seconds() - AllStartupJobsStartTime);
+	GX_NET_LOG_SCREEN_TICK(FColor::White, TEXT("All startup jobs took %.2f seconds to complete"), FPlatformTime::Seconds() - AllStartupJobsStartTime);
 }
 
 void UGxAssetManager::UpdateInitialGameContentLoadPercent(float GameContentPercent)
