@@ -11,3 +11,7 @@
 개발 환경
 - Unreal Engine
 - C++
+- AWS
+- Dedicated Server
+- GAS
+- gRPC
